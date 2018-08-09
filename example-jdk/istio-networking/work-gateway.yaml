@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: work-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller, the gateway will be applied to the proxy running on a pod with labels istio=ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: work
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - work-gateway
+  http:
+  - match:
+    - uri:
+        exact: /work
+    route:
+    - destination:
+        host: work-server
+        port:
+          number: 8080
